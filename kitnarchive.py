@@ -25,6 +25,7 @@ class ArchiveModule(Module):
         self.waiting = None
         self.info = ""
         self.requester = ()
+        self.got_preamble = False
 
     def append_page(self, title, new_text, project_id=None, comment=None, requester=None):
         if project_id == None:
@@ -51,6 +52,7 @@ class ArchiveModule(Module):
         self.waiting = None
         self.requester = ()
         self.info = ""
+        self.got_preamble = False
 
     @Module.handle('PRIVMSG')
     def handle_privmsg(self, client, actor, recipient, message):
@@ -70,16 +72,27 @@ class ArchiveModule(Module):
 
         elif self.waiting and actor == self.infobot and str(recipient) == client.user.nick:
             preamble = self.waiting + " =is= "
-            if message.startswith(preamble):
+            if self.got_preamble:
+                if message.startswith("... "):
+                    message = message[4:]
+                if message.endswith(" ..."):
+                    message = message[:-3]
+                    self.info += (message)
+                else:
+                    self.info += (message)
+                    self.archive()
+            elif message.startswith(preamble):
                 message = message[len(preamble):]
-            if message.startswith("... "):
-                message = message[4:]
-            if message.endswith(" ..."):
-                message = message[:-3]
-                self.info += (message)
+                self.got_preamble = True
+                if message.endswith(" ..."):
+                    message = message[:-3]
+                    self.info += (message)
+                else:
+                    self.info += (message)
+                    self.archive()
             else:
-                self.info += (message)
-                self.archive()
+                client.reply(self.requester[1], self.requester[0], "{} doesn't seem to know anything about {}.".format(self.infobot.split("!", 1)[0], self.waiting))
+                self.clear()
 
         elif message.startswith("archive"):
             if self.waiting != None:
