@@ -5,6 +5,7 @@ from redmine.exceptions import BaseRedmineError
 from datetime import datetime
 from logging import getLogger
 from kitnirc.modular import Module
+from kitnirc.contrib.admintools import is_admin
 
 _log = getLogger(__name__)
 
@@ -36,10 +37,12 @@ class ArchiveModule(Module):
         if str(recipient) != client.user.nick:
             if message.startswith(client.user.nick):
                 message = message.split(None, 1)[1]
+            else:
+                return
 
-        if message.startswith("test"):
-            self.append_page('api_test', "\n* {} scripted update.".format(datetime.now()))
-            client.reply(recipient, actor, "Okay, posted a test.")
+        if message.startswith("test") and is_admin(self.controller, client, actor):
+            self.append_page('api_test', "\n* {} - scripted update at {}'s request.".format(datetime.now(), actor))
+            client.reply(recipient, actor, "Okay, posted a test to {}/projects/{}/wiki/api_test".format(self.controller.config.get('redmine', 'host'), self.project))
         else:
             client.reply(recipient, actor, "?")
 
