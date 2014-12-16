@@ -1,0 +1,25 @@
+[server]
+host=irc.example.com
+ssl=True
+port=6697
+nick=ArchiveBot
+username=archivebot
+realname=Archive Bot
+
+[modules]
+kitnirc.contrib.healthcheck = 1
+kitnirc.contrib.admintools = 2
+kitnirc.contrib.autojoin = 3
+kitnirc.contrib.commands = 4
+modules.kitnarchive = 10
+
+[admins]
+mynick@bastion.example.com
+
+[channels]
+mychannel = mychannelkey
+
+[redmine]
+;host = https://redmine.example.com
+;api_key = 0000000000
+;default_project = myproject
