@@ -12,9 +12,9 @@ class ArchiveModule(Module):
     def __init__(self, *args, **kwargs):
         super(ArchiveModule, self).__init__(*args, **kwargs)
         config = self.controller.config
-        for setting in ['host', 'api_key', 'default_project']:
-            if not config.has_section('redmine'):
-                raise KeyError("No redmine section in configuration file.")
+        if not config.has_section('redmine'):
+            raise KeyError("No redmine section in configuration file.")
+        for setting in ['host', 'api_key', 'default_project', 'infobot']:
             if not config.has_option('redmine', setting):
                 raise KeyError("Missing required redmine setting: {}".format(setting))
         self.host = Redmine(config.get('redmine', 'host'), key=config.get('redmine', 'api_key'))
