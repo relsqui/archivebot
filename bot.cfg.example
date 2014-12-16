@@ -23,3 +23,4 @@ mychannel = mychannelkey
 ;host = https://redmine.example.com
 ;api_key = 0000000000
 ;default_project = myproject
+;infobot = infobot!infobot@bastion.example.com
