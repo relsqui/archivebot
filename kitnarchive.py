@@ -75,7 +75,7 @@ class ArchiveModule(Module):
                 self.clear()
 
         elif message == "source":
-            client.reply(recipient, actor, "I'll post it just as soon as relsqui writes me some documentation.")
+            client.reply(recipient, actor, "https://github.com/relsqui/archivebot")
 
         elif message == "help":
             client.reply(recipient, actor, "Usage: archive <topic>. So far I just post to a test page, as a proof of concept, but stay tuned.")
