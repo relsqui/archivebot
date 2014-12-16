@@ -67,12 +67,18 @@ class ArchiveModule(Module):
             else:
                 return
 
-        if message.startswith("clear") and is_admin(self.controller, client, actor):
+        if message == "clear" and is_admin(self.controller, client, actor):
             if self.waiting is None:
                 client.reply(recipient, actor, "I'm not actually trying to archive anything right now.")
             else:
                 client.reply(recipient, actor, "Okay, I'll stop trying to archive {}.".format(self.waiting))
                 self.clear()
+
+        elif message == "source":
+            client.reply(recipient, actor, "I'll post it just as soon as relsqui writes me some documentation.")
+
+        elif message == "help":
+            client.reply(recipient, actor, "Usage: archive <topic>. So far I just post to a test page, as a proof of concept, but stay tuned.")
 
         elif self.waiting and actor == self.infobot and str(recipient) == client.user.nick:
             preamble = self.waiting + " =is= "
