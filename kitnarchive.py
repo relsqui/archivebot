@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from redmine import Redmine
+from redmine import Redmine, ResourceNotFoundError
 from redmine.exceptions import BaseRedmineError
 from datetime import datetime
 from logging import getLogger
@@ -19,7 +19,8 @@ class ArchiveModule(Module):
         for setting in ['host', 'api_key', 'default_project', 'infobot']:
             if not config.has_option('redmine', setting):
                 raise KeyError("Missing required redmine setting: {}".format(setting))
-        self.host = Redmine(config.get('redmine', 'host'), key=config.get('redmine', 'api_key'))
+        self.hostname = config.get('redmine', 'host')
+        self.host = Redmine(self.hostname, key=config.get('redmine', 'api_key'))
         self.project = config.get('redmine', 'default_project')
         self.infobot = config.get('redmine', 'infobot')
         self.waiting = None
@@ -43,8 +44,11 @@ class ArchiveModule(Module):
     def archive(self):
         factoids = re_split(r'( or |\|)', self.info)[::2]
         formatted_info = "\n\n{} recorded on {} that {} is:\n* ".format(self.controller.config.get('server', 'nick'), datetime.today().date(), self.waiting) + "\n* ".join(factoids)
-        self.append_page('api_test', formatted_info, requester=self.requester)
-        self.controller.client.reply(self.requester[1], self.requester[0], "Done!".format(self.waiting))
+        try:
+            self.append_page('API_test', formatted_info, requester=self.requester)
+            self.controller.client.reply(self.requester[1], self.requester[0], "Done! {}/projects/{}/wiki/API_test".format(self.hostname, self.project, self.waiting))
+        except ResourceNotFoundError:
+            self.controller.client.reply(self.requester[1], self.requester[0], "Sorry, that wiki page doesn't exist yet.")
         self.clear()
 
     def clear(self):
