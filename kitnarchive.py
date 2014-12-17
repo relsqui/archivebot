@@ -37,7 +37,13 @@ class ArchiveModule(Module):
             else:
                 comment = "Updated by {}.".format(self.controller.config.get('server', 'nick'))
         page = self.host.wiki_page.get(title, project_id=project_id)
-        page.text += new_text
+        target = "\n!>https://raw.githubusercontent.com/relsqui/archivebot/master/ArchiveBot-target.png!"
+        new_text += target
+        if target in page.text:
+            parts = page.text.split(target, 1)
+            page.text = new_text.join(parts)
+        else:
+            page.text += new_text
         page.comments = comment
         page.save()
 
