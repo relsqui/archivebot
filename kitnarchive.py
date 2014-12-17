@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from redmine import Redmine, ResourceNotFoundError
-from redmine.exceptions import BaseRedmineError
+from redmine.exceptions import BaseRedmineError, ForbiddenError
 from datetime import datetime
 from logging import getLogger
 from re import split as re_split
@@ -35,7 +35,13 @@ class ArchiveModule(Module):
         else:
             project_id = self.project
             title = self.target
-        page = self.host.wiki_page.get(title, project_id=project_id)
+        try:
+            page = self.host.wiki_page.get(title, project_id=project_id)
+        except ForbiddenError:
+            self.controller.client.reply(self.requester[1], self.requester[0], "I don't have permission to read that page!")
+            self.clear()
+            return
+
         target = "\n!>https://raw.githubusercontent.com/relsqui/archivebot/master/ArchiveBot-target.png!"
         new_text += target
         if target in page.text:
@@ -44,7 +50,11 @@ class ArchiveModule(Module):
         else:
             page.text += new_text
         page.comments = "Updated by {} at {}'s request.".format(self.controller.config.get('server', 'nick'), self.requester[0])
-        page.save()
+        try:
+            page.save()
+        except ForbiddenError:
+            self.controller.client.reply(self.requester[1], self.requester[0], "I don't have permission to write to that page!")
+            self.clear()
 
     def archive(self):
         factoids = re_split(r'( or |\|)', self.info)[::2]
