@@ -80,6 +80,8 @@ class ArchiveModule(Module):
         message = message.strip()
         if str(recipient) != client.user.nick:
             if message.startswith(client.user.nick):
+                if message.startswith(client.user.nick + "++"):
+                    return
                 message = message.split(None, 1)[1]
             else:
                 return
@@ -144,6 +146,12 @@ class ArchiveModule(Module):
                 self.requester = (actor.split("!", 1)[0], recipient)
                 infonick = self.infobot.split("!", 1)[0]
                 self.controller.client.msg(infonick, "{}: literal {}".format(infonick, key))
+
+        elif message.startswith("sudo "):
+            client.reply(recipient, actor, "Password:")
+
+        elif message == "hunter2":
+            client.reply(recipient, actor, "This incident will be reported.")
 
         else:
             client.reply(recipient, actor, "?")
