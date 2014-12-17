@@ -24,18 +24,17 @@ class ArchiveModule(Module):
         self.project = config.get('redmine', 'default_project')
         self.infobot = config.get('redmine', 'infobot')
         self.waiting = None
+        self.target = None
         self.info = ""
         self.requester = ()
         self.got_preamble = False
 
-    def append_page(self, title, new_text, project_id=None, comment=None, requester=None):
-        if project_id == None:
+    def append_page(self, new_text):
+        if "/" in self.target:
+            project_id, title = self.target.split("/", 1)
+        else:
             project_id = self.project
-        if comment == None:
-            if requester:
-                comment = "Updated by {} at {}'s request.".format(self.controller.config.get('server', 'nick'), requester[0])
-            else:
-                comment = "Updated by {}.".format(self.controller.config.get('server', 'nick'))
+            title = self.target
         page = self.host.wiki_page.get(title, project_id=project_id)
         target = "\n!>https://raw.githubusercontent.com/relsqui/archivebot/master/ArchiveBot-target.png!"
         new_text += target
@@ -44,15 +43,15 @@ class ArchiveModule(Module):
             page.text = new_text.join(parts)
         else:
             page.text += new_text
-        page.comments = comment
+        page.comments = "Updated by {} at {}'s request.".format(self.controller.config.get('server', 'nick'), self.requester[0])
         page.save()
 
     def archive(self):
         factoids = re_split(r'( or |\|)', self.info)[::2]
         formatted_info = "\n\n{} recorded on {} that {} is:\n* ".format(self.controller.config.get('server', 'nick'), datetime.today().date(), self.waiting) + "\n* ".join(factoids)
         try:
-            self.append_page('API_test', formatted_info, requester=self.requester)
-            self.controller.client.reply(self.requester[1], self.requester[0], "Done! {}/projects/{}/wiki/API_test".format(self.hostname, self.project, self.waiting))
+            self.append_page(formatted_info)
+            self.controller.client.reply(self.requester[1], self.requester[0], "Done! {}/projects/{}/wiki/{}".format(self.hostname, self.project, self.target))
         except ResourceNotFoundError:
             self.controller.client.reply(self.requester[1], self.requester[0], "Sorry, that wiki page doesn't exist yet.")
         self.clear()
@@ -60,6 +59,7 @@ class ArchiveModule(Module):
     def clear(self):
         _log.debug("Clearing waiting stuff.")
         self.waiting = None
+        self.target = None
         self.requester = ()
         self.info = ""
         self.got_preamble = False
@@ -84,7 +84,7 @@ class ArchiveModule(Module):
             client.reply(recipient, actor, "https://github.com/relsqui/archivebot")
 
         elif message == "help":
-            client.reply(recipient, actor, "Usage: archive <topic>. So far I just post to a test page, as a proof of concept, but stay tuned.")
+            client.reply(recipient, actor, "Usage: 'archive <bot entry> => [<wiki_project>/]<wiki_page>', e.g. 'archive r3lsqui => finnr3', or 'archive r3lsqui => braindump/finnr3'. For full README, see https://github.com/relsqui/archivebot/blob/master/README.md")
 
         elif self.waiting and actor == self.infobot and str(recipient) == client.user.nick:
             preamble = self.waiting + " =is= "
@@ -114,8 +114,22 @@ class ArchiveModule(Module):
             if self.waiting != None:
                 client.reply(recipient, actor, "Hang on, I'm still archiving {}.".format(self.waiting))
             else:
-                key = message.split(None, 1)[1]
+                try:
+                    # Peel off "archive"
+                    message = message.split(None, 1)[1]
+                    key, target = message.split("=>", 1)
+                    key = key.strip()
+                    target = target.strip()
+                    if not key or not target:
+                        raise ValueError
+                except (IndexError, ValueError):
+                    client.reply(recipient, actor, "Syntax: 'archive <bot entry> => [<wiki_project>/]<wiki_page>'. See also help.")
+                    return
+                if target.startswith("/") or target.endswith("/"):
+                    client.reply(recipient, actor, "The wiki page should be either just page_name, or project_name/page_name if it's not in the {} project.".format(self.project))
+                    return
                 self.waiting = key
+                self.target = target
                 self.requester = (actor.split("!", 1)[0], recipient)
                 infonick = self.infobot.split("!", 1)[0]
                 self.controller.client.msg(infonick, "{}: literal {}".format(infonick, key))

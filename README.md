@@ -3,6 +3,13 @@ ArchiveBot
 
 IRC bot for collecting information from an infobot and posting it en masse to a Redmine wiki page.
 
+Usage
+-----
+* Copy an infobot entry to a wiki page: `ArchiveBot: archive my bot entry => my_wiki_page`
+* Optionally, specify the project: `ArchiveBot: archive my bot entry => my_project/my_page`
+
+The first time ArchiveBot appends to a page (that it knows of), it will add the information it's archiving to the end of the page and leave an invisible trace there for itself to find later. Each time it archives to the same page thereafter, it will put the new information wherever the trace is, so you can put other things after that point and all the archived information will stay together. You can also move or delete the trace if you prefer, and ArchiveBot will act like it's never seen the page before.
+
 Installation
 ------------
 
