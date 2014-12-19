@@ -97,7 +97,7 @@ class ArchiveModule(Module):
             client.reply(recipient, actor, "https://github.com/relsqui/archivebot")
 
         elif message == "help":
-            client.reply(recipient, actor, "Usage: 'archive <bot entry> => [<wiki_project>/]<wiki_page>', e.g. 'archive r3lsqui => finnr3', or 'archive r3lsqui => braindump/finnr3'. For full README, see https://github.com/relsqui/archivebot/blob/master/README.md")
+            client.reply(recipient, actor, "Usage: 'archive <bot entry> => [<wiki_project>/]<wiki_page>', e.g. 'archive r3lsqui => f1nnre', or 'archive r3lsqui => braindump/f1nnre'. For full README, see http://bit.ly/archivebotreadme")
 
         elif self.waiting and actor == self.infobot and str(recipient) == client.user.nick:
             preamble = self.waiting + " =is= "
