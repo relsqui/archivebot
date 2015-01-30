@@ -83,6 +83,11 @@ class ArchiveModule(Module):
                 if message.startswith(client.user.nick + "++"):
                     return
                 message = message.split(None, 1)[1]
+            elif actor == self.infobot and message.endswith("..."):
+                client.emote(recipient, "looks up hopefully.")
+                _log.debug("{} trailed off, maybe someone needs to archive?".format(self.infobot))
+                return
+
             else:
                 return
 
