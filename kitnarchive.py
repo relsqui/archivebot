@@ -62,7 +62,7 @@ class ArchiveModule(Module):
         formatted_info = "\n\n{} recorded on {} that {} is:\n* ".format(self.controller.config.get('server', 'nick'), datetime.today().date(), self.waiting) + "\n* ".join(factoids)
         try:
             page_url = self.append_page(formatted_info)
-            self.controller.client.reply(self.requester[1], self.requester[0], "Done! {}".format(page_url))
+            self.controller.client.reply(self.requester[1], self.requester[0], "Done! {} -- I didn't delete the bot entry, just to be safe; please make sure I copied everything right, then do so.".format(page_url))
         except ResourceNotFoundError:
             self.controller.client.reply(self.requester[1], self.requester[0], "Sorry, that wiki page doesn't exist yet.")
         self.clear()
