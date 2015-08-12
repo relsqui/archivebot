@@ -46,11 +46,13 @@ ArchiveBot assumes the following about its environment:
 * An entry that spans multiple lines has " ..." at the end of all but the last one. Some lines may also begin with "... "
 * The Redmine wiki page which is the archive target already exists.
 
-Known Non-Features
-------------------
+Potential Surprises
+-------------------
 
 ArchiveBot can't distinguish between a semantic "or" in the middle of a factoid and the "or" used to separate them. This isn't a bug, exactly, since it has no possible way to tell the difference and thus it won't be fixed.
 
 ArchiveBot also doesn't delete the entry from the infobot when it's done archiving. It errs on the side of not destroying data and leaves that for you to do afterwards.
+
+Finally, ArchiveBot verifies the hostmask of the infobot it's told to talk to, not just the nick. This is to prevent people from using /nick to feed it lies, but it means that if the infobot's hostmask legitimately changes, ArchiveBot's configuration will need to be updated.
 
 See also [issues](https://github.com/relsqui/archivebot/issues).
