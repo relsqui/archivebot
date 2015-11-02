@@ -77,6 +77,11 @@ class ArchiveModule(Module):
 
     @Module.handle('PRIVMSG')
     def handle_privmsg(self, client, actor, recipient, message):
+        actor_nick = actor.split("!", 1)[0]
+        if actor_nick.lower().endswith("bot"):
+            _log.debug("Ignored message from {} because I think it's a bot.".format(actor_nick))
+            return
+
         message = message.strip()
         if str(recipient) != client.user.nick:
             if message.startswith(client.user.nick):
