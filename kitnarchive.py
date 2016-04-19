@@ -89,6 +89,9 @@ class ArchiveModule(Module):
                     return
                 message = message.split(None, 1)[1]
             elif actor == self.infobot and message.endswith("..."):
+                # infoobot trails off when signaling someone
+                if message.startswith("Signaling"):
+                    return
                 client.emote(recipient, "looks up hopefully.")
                 _log.debug("{} trailed off, maybe someone needs to archive?".format(self.infobot))
                 return
