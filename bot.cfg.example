@@ -3,7 +3,7 @@ host=irc.example.com
 ssl=True
 port=6697
 nick=ArchiveBot
-username=archivebot
+username=archivebot 9
 realname=Archive Bot
 
 [modules]
