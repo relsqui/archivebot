@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-from redmine import Redmine, ResourceNotFoundError
-from redmine.exceptions import BaseRedmineError, ForbiddenError
+from redminelib import Redmine
+from redminelib.exceptions import ResourceNotFoundError, ForbiddenError
 from datetime import datetime
 from logging import getLogger
 from re import split as re_split
