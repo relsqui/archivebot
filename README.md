@@ -32,6 +32,9 @@ Installation
 ### as a standalone bot:
 
 * Copy the example config to `bot.cfg`.
+* `mkdir modules`
+* `echo '#' > modules/__init__.py`
+* `ln -s kitnarchive.py modules/kitnarchive.py`
 * Update everything in the server section and the redmine section (see above).
 * Start the bot by running `start.sh`. (It will pass any options, like loglevel etc. through to kitn.)
 
